@@ -47,7 +47,7 @@ import scala.concurrent.Await;
  * Main Application: it reads financial transactions repeatedly and sends them for processing to a
  * Bulk Actor via Actor System.
  */
-public class SampleApp {
+public class ProcessTransactions {
 
   private static final int NUMBER_OF_TRANSACTIONS_TO_READ = 5;
 
