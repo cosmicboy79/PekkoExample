@@ -26,6 +26,8 @@ package edu.pekko.sample.app;
 
 import static scala.concurrent.duration.Duration.Inf;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import edu.pekko.sample.app.actor.TransactionsActor;
 import edu.pekko.sample.app.actor.TransactionsActor.AllTransactionsProcessed;
 import edu.pekko.sample.app.actor.TransactionsActor.Event;
@@ -47,16 +49,21 @@ import scala.concurrent.Await;
  * Main Application: it reads financial transactions repeatedly and sends them for processing to a
  * Bulk Actor via Actor System.
  */
-public class ProcessTransactions {
+public class TransactionsProcessor {
 
   private static final int NUMBER_OF_TRANSACTIONS_TO_READ = 5;
 
   public static void main(String[] args)
       throws InterruptedException, TimeoutException, ExecutionException {
 
+    // so that it can be also executed, in the command line, as full runnable JAR
+    Config config = ConfigFactory.parseString(
+        "pekko.actor.typed.default-mailbox.mailbox-type = \"org.apache.pekko.dispatch.SingleConsumerOnlyUnboundedMailbox\""
+    ).withFallback(ConfigFactory.load());
+
     // getting the Actor System for this application
     ActorSystem<Event> actorSystem = ActorSystem.create(TransactionsActor.create(),
-        "PekkoSampleApp");
+        "PekkoSampleApp", config);
 
     // system is also the ActorRef to the guardian actor
     // as per https://pekko.apache.org/docs/pekko/current/typed/interaction-patterns.html#fire-and-forget
